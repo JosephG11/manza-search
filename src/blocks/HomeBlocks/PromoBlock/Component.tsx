@@ -29,19 +29,29 @@ const PromoBlock: React.FC<PromoBlockProps> = (props) => {
             return (
               <div
                 key={id}
-                className={clsx(
-                  'relative h-40 w-72 flex-shrink-0 overflow-hidden border-2 border-black shadow-[10px_10px_10px_black] hover:border-red-500',
-                )}
+                className="w-64 rounded-primary border-[3px] border-black bg-black shadow-[10px_10px_10px_black] hover:border-red-500"
               >
-                {hasValidLink ? (
-                  <CMSLink {...link}>
-                    {media ? <RenderMedia media={media} /> : <ImagePlaceholder />}
-                  </CMSLink>
-                ) : media ? (
-                  <RenderMedia media={media} />
-                ) : (
-                  <ImagePlaceholder />
-                )}
+                <div
+                  className={clsx(
+                    'relative h-40 w-full flex-shrink-0 overflow-hidden rounded-md border-b-[3px] border-white',
+                  )}
+                >
+                  {hasValidLink ? (
+                    <CMSLink {...link}>
+                      {media ? <RenderMedia media={media} /> : <ImagePlaceholder />}
+                    </CMSLink>
+                  ) : media ? (
+                    <RenderMedia media={media} />
+                  ) : (
+                    <ImagePlaceholder />
+                  )}
+                </div>
+
+                <div className="h-8 w-full rounded-b-primary pt-1">
+                  <span className="ml-6 line-clamp-1 overflow-hidden font-serif text-white">
+                    {link?.url}
+                  </span>
+                </div>
               </div>
             )
           })
