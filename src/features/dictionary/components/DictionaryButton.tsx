@@ -60,9 +60,9 @@ export function DictionaryButton() {
       <DialogTrigger asChild>
         <Button
           aria-label="Open dictionary"
-          className="flex size-full w-full items-center justify-center rounded-primary bg-menu-red px-2 py-1 hover:bg-black sm:px-4 sm:py-2"
+          className="flex h-16 w-16 items-center justify-center rounded-primary border border-black bg-menu-red hover:bg-black sm:h-32 sm:w-32 xl:h-40 xl:w-40"
         >
-          <DictionaryIcon className="h-5 w-5 text-white sm:h-full sm:w-full" />
+          <DictionaryIcon className="h-16 w-16 text-white" />
         </Button>
       </DialogTrigger>
       <DialogContent className="border-4 border-black bg-menu" closeButtonStyles="text-white">

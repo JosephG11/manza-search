@@ -4,7 +4,6 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-    
     "baseUrl": ".",
     "esModuleInterop": true,
     "target": "ES2022",
@@ -39,7 +38,7 @@
       ],
       "@/*": [
         "./src/*"
-      ],
+      ]
     }
   },
   "include": [
@@ -48,8 +47,11 @@
     ".next/types/**/*.ts",
     "redirects.js",
     "next.config.js",
-    "next-sitemap.config.cjs"
-, "src/features/moreOptions", "convex/crons.ts"  ],
+    "next-sitemap.config.cjs",
+    "src/features/moreOptions",
+    "convex/crons.ts",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

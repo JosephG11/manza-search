@@ -15,3 +15,11 @@ public/sitemap*.xml
 
 .env.local
 .env.production
+.env.*
+!.env.example
+
+# clerk configuration (can include secrets)
+/.clerk/
+
+# internal project context (not tracked)
+PROJECT_CONTEXT.md

@@ -20,6 +20,8 @@
     "type-check": "cross-env NODE_OPTIONS=--no-deprecation tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/mistral": "^3.0.40",
+    "@ai-sdk/react": "^3.0.211",
     "@clerk/nextjs": "^6.12.1",
     "@hookform/resolvers": "^3.10.0",
     "@payloadcms/db-mongodb": "latest",
@@ -61,6 +63,7 @@
     "@tiptap/pm": "^2.11.7",
     "@tiptap/react": "^2.11.7",
     "@tiptap/starter-kit": "^2.11.7",
+    "ai": "^6.0.209",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.6.0",
     "clsx": "^2.1.1",
