@@ -3,7 +3,13 @@ import type { ImageResult, VideoResult, WebResult } from './types'
 
 const BRAVE_API_KEY = process.env.BRAVE_SEARCH_API_KEY
 
+export const BRAVE_MAX_WEB_PAGE = 10
+const WEB_PAGE_SIZE = 10
+const IMAGES_COUNT = 100
+const VIDEOS_COUNT = 50
+
 type BraveWebResponse = {
+  query?: { more_results_available?: boolean }
   web?: {
     results?: Array<{
       title: string
@@ -41,7 +47,7 @@ function stripTags(text: string): string {
 async function braveFetch<T>(
   endpoint: 'web' | 'images' | 'videos',
   query: string,
-  count: number,
+  { count, offset }: { count: number; offset?: number },
 ): Promise<T> {
   if (!BRAVE_API_KEY) {
     throw new Error('BRAVE_SEARCH_API_KEY is not set')
@@ -50,6 +56,7 @@ async function braveFetch<T>(
   const url = new URL(`https://api.search.brave.com/res/v1/${endpoint}/search`)
   url.searchParams.set('q', query)
   url.searchParams.set('count', String(count))
+  if (offset !== undefined) url.searchParams.set('offset', String(offset))
 
   const response = await fetch(url, {
     headers: {
@@ -65,19 +72,28 @@ async function braveFetch<T>(
   return response.json()
 }
 
-export async function searchWeb(query: string, count = 10): Promise<WebResult[]> {
-  const json = await braveFetch<BraveWebResponse>('web', query, count)
+export async function searchWeb(
+  query: string,
+  page = 1,
+): Promise<{ results: WebResult[]; hasMore: boolean }> {
+  const json = await braveFetch<BraveWebResponse>('web', query, {
+    count: WEB_PAGE_SIZE,
+    offset: page - 1,
+  })
 
-  return (json.web?.results ?? []).map((r) => ({
-    title: r.title,
-    url: r.url,
-    description: stripTags(r.description),
-    hostname: r.meta_url?.hostname ?? new URL(r.url).hostname,
-  }))
+  return {
+    results: (json.web?.results ?? []).map((r) => ({
+      title: r.title,
+      url: r.url,
+      description: stripTags(r.description),
+      hostname: r.meta_url?.hostname ?? new URL(r.url).hostname,
+    })),
+    hasMore: Boolean(json.query?.more_results_available) && page < BRAVE_MAX_WEB_PAGE,
+  }
 }
 
-export async function searchImages(query: string, count = 10): Promise<ImageResult[]> {
-  const json = await braveFetch<BraveImagesResponse>('images', query, count)
+export async function searchImages(query: string): Promise<ImageResult[]> {
+  const json = await braveFetch<BraveImagesResponse>('images', query, { count: IMAGES_COUNT })
 
   return (json.results ?? []).map((r) => ({
     title: r.title,
@@ -90,8 +106,8 @@ export async function searchImages(query: string, count = 10): Promise<ImageResu
   }))
 }
 
-export async function searchVideos(query: string, count = 10): Promise<VideoResult[]> {
-  const json = await braveFetch<BraveVideosResponse>('videos', query, count)
+export async function searchVideos(query: string): Promise<VideoResult[]> {
+  const json = await braveFetch<BraveVideosResponse>('videos', query, { count: VIDEOS_COUNT })
 
   return (json.results ?? []).map((r) => ({
     title: r.title,

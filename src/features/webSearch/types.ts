@@ -24,8 +24,14 @@ export type VideoResult = {
   publisher: string
 }
 
-export type WebSearchResponse = {
-  web: WebResult[]
-  images: ImageResult[]
-  videos: VideoResult[]
+export type WebSearchType = 'web' | 'images' | 'videos'
+
+export type WebPageResponse = {
+  results: WebResult[]
+  page: number
+  hasMore: boolean
+}
+
+export type ResultsListResponse<T> = {
+  results: T[]
 }

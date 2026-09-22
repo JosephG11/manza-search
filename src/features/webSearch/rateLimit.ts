@@ -1,4 +1,5 @@
 import 'server-only'
+import type { NextRequest } from 'next/server'
 
 type Bucket = {
   count: number
@@ -6,6 +7,13 @@ type Bucket = {
 }
 
 const buckets = new Map<string, Bucket>()
+
+export function getClientIp(request: NextRequest): string {
+  const forwardedFor = request.headers.get('x-forwarded-for')
+  if (forwardedFor) return (forwardedFor.split(',')[0] ?? forwardedFor).trim()
+
+  return request.headers.get('x-real-ip') ?? 'unknown'
+}
 
 /**
  * In-memory sliding-window limiter, scoped to a single server instance.

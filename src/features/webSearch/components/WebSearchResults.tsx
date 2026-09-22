@@ -5,134 +5,79 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDebounce } from '@/utilities/useDebounce'
-import type { WebSearchResponse } from '../types'
+import { WikipediaSummary } from '@/features/wikipedia/components/WikipediaSummary'
+import { ImagesTab } from './ImagesTab'
+import { VideosTab } from './VideosTab'
+import { WebResultsTab } from './WebResultsTab'
 
 export function WebSearchResults({ initialQuery }: { initialQuery: string }) {
   const [value, setValue] = useState(initialQuery)
   const debouncedValue = useDebounce(value)
 
-  const [data, setData] = useState<WebSearchResponse | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-
+  // Keep `?q=` in sync with the debounced input. `replaceState` (integrated with the
+  // Next router) avoids both a server re-render and a history entry per keystroke.
   useEffect(() => {
-    if (!debouncedValue) {
-      setData(null)
-      return
-    }
+    const params = new URLSearchParams(window.location.search)
+    if ((params.get('q') ?? '') === debouncedValue) return
 
-    const controller = new AbortController()
+    if (debouncedValue) params.set('q', debouncedValue)
+    else params.delete('q')
 
-    setIsLoading(true)
-    fetch(`/api/web-search?q=${encodeURIComponent(debouncedValue)}`, {
-      signal: controller.signal,
-    })
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
-      .then((json: WebSearchResponse) => setData(json))
-      .catch((error) => {
-        if (error.name !== 'AbortError') setData(null)
-      })
-      .finally(() => setIsLoading(false))
-
-    return () => controller.abort()
+    const queryString = params.toString()
+    window.history.replaceState(
+      null,
+      '',
+      queryString ? `${window.location.pathname}?${queryString}` : window.location.pathname,
+    )
   }, [debouncedValue])
 
   return (
-    <div className="container space-y-6">
-      <form
-        onSubmit={(e) => e.preventDefault()}
-        className="mx-auto flex h-12 w-full max-w-2xl items-center rounded-full border border-border bg-background px-4"
-      >
-        <Label htmlFor="web-search" className="sr-only">
-          Search the web
-        </Label>
-        <Input
-          id="web-search"
-          value={value}
-          onChange={(event) => setValue(event.target.value)}
-          placeholder="Search the web"
-          className="border-none bg-transparent text-primary outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-        <button type="submit" className="sr-only">
-          submit
-        </button>
-        <SearchIcon className="ml-3 w-5 shrink-0 text-muted-foreground" />
-      </form>
+    <div className="container flex max-w-7xl flex-col gap-6 lg:flex-row lg:items-start">
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="flex h-12 w-full max-w-4xl items-center rounded-md border border-border bg-background px-4"
+        >
+          <Label htmlFor="web-search" className="sr-only">
+            Search the web
+          </Label>
+          <Input
+            id="web-search"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            placeholder="Search the web"
+            className="border-none bg-transparent text-primary outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+          <button type="submit" className="sr-only">
+            submit
+          </button>
+          <SearchIcon className="ml-3 w-5 shrink-0 text-muted-foreground" />
+        </form>
 
-      {isLoading && <p className="text-muted-foreground">Searching the web...</p>}
+        {debouncedValue && (
+          <Tabs defaultValue="web" className="w-full min-w-0 max-w-4xl">
+            <TabsList>
+              <TabsTrigger value="web">Web</TabsTrigger>
+              <TabsTrigger value="images">Images</TabsTrigger>
+              <TabsTrigger value="videos">Videos</TabsTrigger>
+            </TabsList>
 
-      {data && (
-        <Tabs defaultValue="web" className="mx-auto max-w-2xl">
-          <TabsList>
-            <TabsTrigger value="web">Web</TabsTrigger>
-            <TabsTrigger value="images">Images</TabsTrigger>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-          </TabsList>
-
-          <div className="mt-4 rounded-2xl border border-border bg-background p-4 shadow-sm">
-            <TabsContent value="web" className="space-y-4">
-              {data.web.map((result) => (
-                <a
-                  key={result.url}
-                  href={result.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block rounded-lg border border-border p-4 hover:bg-muted"
-                >
-                  <p className="text-sm text-muted-foreground">{result.hostname}</p>
-                  <p className="font-medium text-primary">{result.title}</p>
-                  <p className="text-sm text-muted-foreground">{result.description}</p>
-                </a>
-              ))}
+            <TabsContent value="web" className="mt-4 w-full">
+              <WebResultsTab key={debouncedValue} query={debouncedValue} />
             </TabsContent>
-
-            <TabsContent value="images" className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-              {data.images.length === 0 && <p className="text-muted-foreground">No results found.</p>}
-              {data.images.map((result) => (
-                <a
-                  key={result.url}
-                  href={result.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block overflow-hidden rounded-lg border border-border"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={result.thumbnail}
-                    alt={result.title}
-                    className="aspect-square w-full object-cover"
-                  />
-                </a>
-              ))}
+            <TabsContent value="images" className="mt-4 w-full">
+              <ImagesTab key={debouncedValue} query={debouncedValue} />
             </TabsContent>
-
-            <TabsContent value="videos" className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {data.videos.length === 0 && <p className="text-muted-foreground">No results found.</p>}
-              {data.videos.map((result) => (
-                <a
-                  key={result.url}
-                  href={result.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block overflow-hidden rounded-lg border border-border"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={result.image}
-                    alt={result.title}
-                    className="aspect-video w-full object-cover"
-                  />
-                  <div className="p-2">
-                    <p className="text-sm font-medium text-primary">{result.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {result.publisher} - {result.duration}
-                    </p>
-                  </div>
-                </a>
-              ))}
+            <TabsContent value="videos" className="mt-4 w-full">
+              <VideosTab key={debouncedValue} query={debouncedValue} />
             </TabsContent>
-          </div>
-        </Tabs>
-      )}
+          </Tabs>
+        )}
+      </div>
+
+      <aside className="order-first w-full empty:hidden lg:sticky lg:top-4 lg:order-none lg:w-96 lg:shrink-0">
+        <WikipediaSummary query={debouncedValue} />
+      </aside>
     </div>
   )
 }
