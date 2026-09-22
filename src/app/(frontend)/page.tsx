@@ -12,6 +12,7 @@ import { Home as HomeGlobalType } from '@/payload-types'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { HomeMenu } from '@/features/home/components/HomeMenu'
 import { HomeWelcomeBanner } from '@/features/home/components/HomeWelcomeBanner'
+import { HomeSideBoxes } from '@/features/home/components/HomeSideBoxes'
 import { DictionaryButton } from '@/features/dictionary/components/DictionaryButton'
 import { HomeAd } from '@/features/home/components/HomeAd'
 import { cn } from '@/utilities/ui'
@@ -42,7 +43,9 @@ export default async function Page() {
       <div className="flex max-h-full w-full flex-col gap-2 px-2">
         <HomeWelcomeBanner />
         <div className="flex flex-1 flex-wrap gap-2 xl:flex-nowrap">
-          <div className="order-3 flex max-h-dvh flex-1 basis-full flex-col xl:order-2 xl:basis-auto">
+          <HomeSideBoxes />
+
+          <div className="order-3 flex max-h-dvh flex-1 basis-full flex-col">
             <div className="custom-scrollbar mb-20 mt-4 size-full overflow-y-auto rounded-primary border-x-[30px] border-y-[5px] border-black p-4">
               {layout && layout.length > 0 ? (
                 <RenderHomeBlocks blocks={layout} />
