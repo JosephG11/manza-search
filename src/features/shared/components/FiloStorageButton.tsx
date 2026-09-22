@@ -16,13 +16,17 @@ export function FiloStorageButton() {
 
   return (
     <>
-      <MOMenuButton
-        className="size-10 bg-[#c9a227]"
-        aria-label="Open filo"
-        onClick={() => (isSignedIn ? setOpen(true) : setShowSignInPrompt(true))}
-      >
-        <Folder className="size-5" />
-      </MOMenuButton>
+      <div className="flex flex-col items-center gap-2">
+        <MOMenuButton
+          className="size-10 bg-[#c9a227]"
+          aria-label="Open filo"
+          onClick={() => (isSignedIn ? setOpen(true) : setShowSignInPrompt(true))}
+        >
+          <Folder className="size-5" />
+        </MOMenuButton>
+
+        <span className="font-serif text-sm text-white">Filo</span>
+      </div>
 
       <Dialog open={showSignInPrompt} onOpenChange={setShowSignInPrompt}>
         <DialogContent aria-describedby="Filo signin required">

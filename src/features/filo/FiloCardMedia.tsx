@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 import { ImagePlaceholder } from '../shared/components/ImagePlaceholder'
+import { ImageDetailDialog } from '../shared/components/ImageDetailDialog'
 import { FiloCardMediaProps } from './types'
 
 const BookReader = dynamic(
@@ -8,6 +9,9 @@ const BookReader = dynamic(
 )
 
 export function FiloCardMedia({ content, mediaElement, label }: FiloCardMediaProps) {
+  if (content.type === 'image')
+    return <ImageDetailDialog image={content} hasValidLink={false} triggerClassName="size-full" />
+
   if (content.type !== 'book') return mediaElement
 
   return (
