@@ -5,6 +5,8 @@ import PageClient from './page.client'
 import { SearchLanding } from '@/features/search/components/SearchLanding'
 import { WebSearchResults } from '@/features/webSearch/components/WebSearchResults'
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
+import { NewListDialog } from '@/features/articles/components/ArticleTopMenu/Lists/NewListDialog'
+import { auth } from '@clerk/nextjs/server'
 
 type Args = {
   searchParams: Promise<{
@@ -13,6 +15,7 @@ type Args = {
 }
 export default async function Page({ searchParams: searchParamsPromise }: Args) {
   const { q: query } = await searchParamsPromise
+  const { userId } = await auth()
   if (!query) {
     return (
       <section className="mb-24">
@@ -36,6 +39,8 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
 
         <WebSearchResults initialQuery={query} />
       </div>
+
+      {userId && <NewListDialog />}
 
       <BottomMenu />
     </section>
