@@ -12,6 +12,7 @@ export function ArticleLeftMenu({
   otherVerifiedSources,
   sectionTitles,
   url,
+  imagesHref,
 }: ArticleLeftMenuProps) {
   return (
     <>
@@ -19,7 +20,7 @@ export function ArticleLeftMenu({
         <ArticleMenuButton onClick={scrollToTop}>TOP</ArticleMenuButton>
 
         <ArticleMenuButton asChild>
-          <Link href={`${url}/images`}>IMG</Link>
+          <Link href={imagesHref ?? `${url}/images`}>IMG</Link>
         </ArticleMenuButton>
         <ArticleMenuButton>VIDS</ArticleMenuButton>
       </div>

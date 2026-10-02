@@ -7,12 +7,14 @@ import {
 } from '@/features/webSearch/braveClient'
 import { searchManzaArticles } from '@/features/webSearch/manzaArticles'
 import { checkRateLimit, getClientIp } from '@/features/webSearch/rateLimit'
+import { searchWikipedia } from '@/features/wikipedia/wikipediaClient'
 import { filterReachable } from '@/features/webSearch/urlCheck'
 import type {
   ImageResult,
   ResultsListResponse,
   VideoResult,
   WebPageResponse,
+  WebResult,
   WebSearchType,
 } from '@/features/webSearch/types'
 
@@ -21,6 +23,25 @@ export const maxDuration = 30
 const RATE_LIMIT = 30
 const RATE_LIMIT_WINDOW_MS = 60_000
 const SEARCH_TYPES: WebSearchType[] = ['web', 'images', 'videos']
+
+async function searchWikiAsManza(query: string, hostname: string): Promise<WebResult[]> {
+  try {
+    const summary = await searchWikipedia(query)
+    if (!summary) return []
+
+    return [
+      {
+        title: summary.title,
+        url: `/articles/wiki/${encodeURIComponent(summary.title)}`,
+        description: summary.paragraphs[0] ?? '',
+        hostname,
+      },
+    ]
+  } catch (error) {
+    console.error('web-search wikipedia failed:', error)
+    return []
+  }
+}
 
 export async function GET(request: NextRequest) {
   const { searchParams, hostname } = request.nextUrl
@@ -77,8 +98,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Search failed' }, { status: 502 })
   }
 
+  const manzaResults = manza.status === 'fulfilled' ? manza.value : []
+  const wikiResults =
+    page === 1 && manzaResults.length === 0 ? await searchWikiAsManza(query, hostname) : []
+
   const response: WebPageResponse = {
-    results: [...(manza.status === 'fulfilled' ? manza.value : []), ...web.value.results],
+    results: [...manzaResults, ...wikiResults, ...web.value.results],
     page,
     hasMore: web.value.hasMore,
   }
