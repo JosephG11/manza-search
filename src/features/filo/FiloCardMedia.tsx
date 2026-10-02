@@ -12,6 +12,19 @@ export function FiloCardMedia({ content, mediaElement, label }: FiloCardMediaPro
   if (content.type === 'image')
     return <ImageDetailDialog image={content} hasValidLink={false} triggerClassName="size-full" />
 
+  if (content.type === 'link' || content.type === 'video')
+    return (
+      <a
+        href={content.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block size-full"
+        aria-label={label}
+      >
+        {mediaElement}
+      </a>
+    )
+
   if (content.type !== 'book') return mediaElement
 
   return (

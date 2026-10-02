@@ -1,8 +1,9 @@
-import { Article, ArticleMedia, Book } from '@/payload-types'
+import type { ExternalContentInput, FiloContentType } from '@/features/filo/types'
 
 type ListItem = {
-  content: Article | ArticleMedia | Book
-  contentType: 'article' | 'image' | 'book'
+  content: { id: string }
+  contentType: FiloContentType
+  external?: ExternalContentInput
 }
 
 export type ListButtonProps = ListItem

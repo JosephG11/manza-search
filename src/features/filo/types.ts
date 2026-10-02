@@ -14,9 +14,38 @@ export type BookWithType = Book & {
   type: 'book'
 }
 
+export type ExternalContent = {
+  id: string
+  url: string
+  title: string
+  thumbnail?: string
+  source?: string
+}
+
+export type ExternalContentInput = Omit<ExternalContent, 'id'>
+
+export type LinkWithType = ExternalContent & {
+  type: 'link'
+}
+
+export type VideoWithType = ExternalContent & {
+  type: 'video'
+}
+
 type TabsNames = 'pin' | 'save' | 'history' | 'lists'
 
-export type FiloContent = ArticleWithType | ArticleMediaWithType | BookWithType
+export type FiloContent =
+  | ArticleWithType
+  | ArticleMediaWithType
+  | BookWithType
+  | LinkWithType
+  | VideoWithType
+
+export type FiloContentType = FiloContent['type']
+
+export type FiloTypeBadgeProps = {
+  type: FiloContentType
+}
 
 export type FiloContentCardProps = {
   content: FiloContent

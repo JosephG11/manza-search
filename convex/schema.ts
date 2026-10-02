@@ -1,5 +1,6 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
+import { contentTypeValidator, externalContentValidator } from './validators'
 
 export default defineSchema({
   users: defineTable({
@@ -56,14 +57,16 @@ export default defineSchema({
   savedContent: defineTable({
     userId: v.id('users'),
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
   })
     .index('by_user', ['userId'])
     .index('by_user_content', ['userId', 'contentId']),
   pinnedContent: defineTable({
     userId: v.id('users'),
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
     pinnedAt: v.number(),
   })
     .index('by_user', ['userId'])
@@ -79,7 +82,8 @@ export default defineSchema({
     userId: v.id('users'),
     listId: v.id('contentLists'),
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
   })
     .index('by_user', ['userId'])
     .index('by_list', ['listId'])

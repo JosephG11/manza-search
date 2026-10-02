@@ -1,6 +1,7 @@
 import { ConvexError, v } from 'convex/values'
 import { mutation } from './_generated/server'
 import { getAuthenticatedUser } from './_utils'
+import { contentTypeValidator, externalContentValidator } from './validators'
 
 export const createList = mutation({
   args: {
@@ -27,9 +28,10 @@ export const addToList = mutation({
   args: {
     listId: v.id('contentLists'),
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
   },
-  handler: async (ctx, { listId, contentId, contentType }) => {
+  handler: async (ctx, { listId, contentId, contentType, external }) => {
     const user = await getAuthenticatedUser(ctx)
 
     const list = await ctx.db.get(listId)
@@ -49,6 +51,7 @@ export const addToList = mutation({
       listId,
       contentId,
       contentType,
+      external,
     })
   },
 })
@@ -102,9 +105,10 @@ export const createListWithContent = mutation({
   args: {
     name: v.string(),
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
   },
-  handler: async (ctx, { name, contentId, contentType }) => {
+  handler: async (ctx, { name, contentId, contentType, external }) => {
     const user = await getAuthenticatedUser(ctx)
 
     const existing = await ctx.db
@@ -126,6 +130,7 @@ export const createListWithContent = mutation({
       listId: listId,
       contentId,
       contentType,
+      external,
     })
   },
 })

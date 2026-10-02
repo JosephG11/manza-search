@@ -1,13 +1,15 @@
 import { ConvexError, v } from 'convex/values'
 import { mutation, query } from './_generated/server'
 import { getAuthenticatedUser } from './_utils'
+import { contentTypeValidator, externalContentValidator } from './validators'
 
 export const saveContent = mutation({
   args: {
     contentId: v.string(),
-    contentType: v.union(v.literal('article'), v.literal('image'), v.literal('book')),
+    contentType: contentTypeValidator,
+    external: v.optional(externalContentValidator),
   },
-  handler: async (ctx, { contentId, contentType }) => {
+  handler: async (ctx, { contentId, contentType, external }) => {
     const currentUser = await getAuthenticatedUser(ctx)
 
     const exists = await ctx.db
@@ -25,6 +27,7 @@ export const saveContent = mutation({
       userId: currentUser._id,
       contentId,
       contentType,
+      external,
     })
   },
 })

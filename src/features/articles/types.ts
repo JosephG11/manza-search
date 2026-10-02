@@ -2,6 +2,7 @@ import { Article, ArticleMedia, Book } from '@/payload-types'
 import { sectionTitle } from '@/utilities/getSectionTitles'
 import { ButtonProps } from '@/components/ui/button'
 import { ReactNode } from 'react'
+import type { ExternalContentInput, FiloContentType } from '@/features/filo/types'
 
 export type CardArticleData = Pick<Article, 'slug' | 'meta' | 'title' | 'updatedAt'>
 
@@ -22,6 +23,7 @@ export type ArticleLeftMenuProps = Pick<Article, 'otherVerifiedSources'> & {
   authors: string[]
   sectionTitles: sectionTitle[]
   url?: string
+  imagesHref?: string
 }
 
 export interface ArticleLeftMenuContainerProps {
@@ -57,7 +59,8 @@ type MenuItem = {
 
 export type ExtraContentPopoverMenuProps = {
   menuItems: MenuItem[]
-  content: string | null | ArticleMedia | Book
+  content: string | null | ArticleMedia | Book | { id: string }
   isSignedIn?: boolean
-  contentType: 'article' | 'image' | 'book'
+  contentType: FiloContentType
+  external?: ExternalContentInput
 }

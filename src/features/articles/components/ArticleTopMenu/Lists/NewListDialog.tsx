@@ -23,6 +23,7 @@ import {
   useListsActions,
   useListsContentId,
   useListsContentType,
+  useListsExternal,
   useListsOpen,
 } from '@/stores/listsStore'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -43,6 +44,7 @@ export function NewListDialog() {
   const { setOpen } = useListsActions()
   const contentId = useListsContentId()
   const contentType = useListsContentType()
+  const external = useListsExternal()
 
   const form = useForm<z.infer<typeof listSchema>>({
     resolver: zodResolver(listSchema),
@@ -57,6 +59,7 @@ export function NewListDialog() {
         name: values.name,
         contentId,
         contentType,
+        external,
       })
       toast.success(`${values.name} list created!`)
       setOpen(false)

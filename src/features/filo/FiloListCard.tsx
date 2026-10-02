@@ -3,6 +3,7 @@ import { RenderMedia } from '../shared/components/RenderMedia'
 import { ImagePlaceholder } from '../shared/components/ImagePlaceholder'
 import { RemoveFiloItemButton } from './RemoveFiloItemButton'
 import { FiloCardMedia } from './FiloCardMedia'
+import { FiloTypeBadge } from './FiloTypeBadge'
 import { toast } from 'sonner'
 import { ConvexError } from 'convex/values'
 import { FiloListCardProps } from './types'
@@ -46,12 +47,26 @@ export function FiloListCard({ content, removeFn, pending, name, groupId }: Filo
 
       label = content.title
       break
+
+    case 'link':
+    case 'video':
+      if (content.thumbnail) {
+        mediaElement = (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={content.thumbnail} alt={content.title} className="size-full object-cover" />
+        )
+      }
+
+      label = content.title
+      break
   }
 
   return (
     <div className="space-y-2">
       <div className="relative h-40 w-32 overflow-hidden rounded-md border-2 border-black">
         <FiloCardMedia content={content} mediaElement={mediaElement} label={label} />
+
+        <FiloTypeBadge type={content.type} />
 
         <RemoveFiloItemButton onClick={handleRemove} disabled={pending ? pending : false} />
       </div>

@@ -18,9 +18,10 @@ import { ConvexError } from 'convex/values'
 export function ListsButtonAuthenticated({
   content,
   contentType,
+  external,
   children,
 }: ListsButtonAuthenticatedProps) {
-  const { setOpen, setContentId, setContentType } = useListsActions()
+  const { setOpen, setContentId, setContentType, setExternal } = useListsActions()
 
   const { mutate: addToList, pending: addPending } = useMutationState(api.list.addToList)
 
@@ -30,11 +31,12 @@ export function ListsButtonAuthenticated({
     setOpen(true)
     setContentId(content.id)
     setContentType(contentType)
+    setExternal(external)
   }
 
   async function handleAddToList({ list }: { list: { name: string; _id: string } }) {
     try {
-      await addToList({ listId: list._id, contentId: content.id, contentType })
+      await addToList({ listId: list._id, contentId: content.id, contentType, external })
       toast.success(`${contentType} added to list: ${list.name}`)
     } catch (error) {
       toast.error(error instanceof ConvexError ? error.data : 'Unexpected error occurred')

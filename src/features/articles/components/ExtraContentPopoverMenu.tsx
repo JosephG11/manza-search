@@ -8,6 +8,7 @@ export function ExtraContentPopoverMenu({
   content,
   isSignedIn,
   contentType,
+  external,
 }: ExtraContentPopoverMenuProps) {
   return (
     <PopoverContent className="flex w-40 flex-col items-center border-2 border-black">
@@ -15,7 +16,11 @@ export function ExtraContentPopoverMenu({
       <ul className="flex w-full flex-col items-center">
         {content && typeof content === 'object' && (
           <li className="w-full">
-            <ListsButtonAuthenticated content={content} contentType={contentType}>
+            <ListsButtonAuthenticated
+              content={content}
+              contentType={contentType}
+              external={external}
+            >
               <Button
                 variant="ghost"
                 className="w-full font-serif font-bold"

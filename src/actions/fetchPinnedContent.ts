@@ -3,6 +3,7 @@
 import { getPayload } from 'payload'
 import configPromise from '@/payload.config'
 import { actionClient } from '@/lib/safe-action'
+import { isPayloadRow, toExternalContent } from '@/utilities/externalFiloContent'
 import { fetchPinnedContentSchema } from './schemas'
 
 export const fetchPinnedContent = actionClient
@@ -16,7 +17,7 @@ export const fetchPinnedContent = actionClient
     try {
       const payload = await getPayload({ config: configPromise })
 
-      const savedIds = pinList.map((pin) => pin.contentId)
+      const savedIds = pinList.filter(isPayloadRow).map((pin) => pin.contentId)
 
       const [articleResults, imageResults, bookResults] = await Promise.all([
         payload.find({
@@ -51,7 +52,9 @@ export const fetchPinnedContent = actionClient
 
       const orderMap = new Map(pinList.map((pin, index) => [pin.contentId, index]))
 
-      const mergedList = [...articles, ...images, ...books].sort(
+      const externals = pinList.map(toExternalContent).filter((content) => content !== null)
+
+      const mergedList = [...articles, ...images, ...books, ...externals].sort(
         (a, b) => (orderMap.get(a.id) ?? Infinity) - (orderMap.get(b.id) ?? Infinity),
       )
 
