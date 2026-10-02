@@ -43,6 +43,10 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     publicId = cloudinary?.public_id || ''
   }
 
+  const src = publicIdFromProps ? (publicIdFromProps as string) : publicId
+
+  if (!src) return null
+
   const loading = loadingFromProps || (!priority ? 'lazy' : undefined)
 
   // NOTE: this is used by the browser to determine which image to download at different screen sizes
@@ -63,7 +67,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         format="auto"
         loading={loading}
         sizes={sizes}
-        src={publicIdFromProps ? (publicIdFromProps as string) : publicId}
+        src={src}
       />
     </picture>
   )
