@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
+import { IndexBrowser } from '@/features/indexBrowser/components/IndexBrowser'
+import { SectionCarousel } from '@/features/carousel/components/SectionCarousel'
 
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { HealthAndWellness as HealthAndWellnessGlobalType } from '@/payload-types'
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
-import { HealthAndWellnessContent } from '@/features/healthAndWellness/components/HealthAndWellnessContent'
-import { HealthAndWellnessHero } from '@/features/healthAndWellness/components/HealthAndWellnessHero'
 import { Metadata } from 'next'
-import { findArticlesByTopic } from '@/utilities/findArticlesByTopic'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -20,9 +19,7 @@ export default async function Page() {
       2,
     )()
 
-    const articlesByTopic = await findArticlesByTopic('health-and-wellness')
-
-    const { suggestedArticles, pageAds, paidTopSpot } = healthAndWellnessData
+    const { suggestedArticles } = healthAndWellnessData
 
     return (
       <section>
@@ -36,11 +33,11 @@ export default async function Page() {
             </h2>
           </div>
 
-          <HealthAndWellnessHero ads={pageAds} />
+          <SectionCarousel section="healthAndWellness" />
 
-
-          <HealthAndWellnessContent articlesByTopic={articlesByTopic} paidTopSpot={paidTopSpot} />
-
+          <Suspense>
+            <IndexBrowser section="healthAndWellness" />
+          </Suspense>
 
           <BottomMenu />
         </div>

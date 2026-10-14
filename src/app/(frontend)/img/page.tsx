@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
+import { IndexBrowser } from '@/features/indexBrowser/components/IndexBrowser'
+import { SectionCarousel } from '@/features/carousel/components/SectionCarousel'
 import { Metadata } from 'next'
 
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
@@ -7,22 +9,15 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Img as ImgGlobalType } from '@/payload-types'
 
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
-import { ImgHero } from '@/features/img/components/ImgHero'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { ImgContent } from '@/features/img/components/ImgContent'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
   try {
-    const [imgData, articlesByCategory]: [
-      ImgGlobalType,
-      Awaited<ReturnType<typeof getArticlesByCategory>>,
-    ] = await Promise.all([getCachedGlobal('img', 2)(), getArticlesByCategory()])
+    const imgData: ImgGlobalType = await getCachedGlobal('img', 2)()
 
-    const { suggestedArticles, pageAds } = imgData
+    const { suggestedArticles } = imgData
 
     return (
       <section>
@@ -36,11 +31,11 @@ export default async function Page() {
             </h2>
           </div>
 
-          <ImgHero ads={pageAds} />
+          <SectionCarousel section="img" />
 
-
-          <ImgContent articlesByCategory={articlesByCategory} />
-
+          <Suspense>
+            <IndexBrowser section="img" />
+          </Suspense>
 
           <BottomMenu />
         </div>
@@ -63,50 +58,5 @@ export default async function Page() {
 export function generateMetadata(): Metadata {
   return {
     title: `Img | Manza Search`,
-  }
-}
-
-async function getArticlesByCategory() {
-  try {
-    const payload = await getPayload({ config: configPromise })
-
-    const categories = await payload.find({
-      collection: 'categories',
-      depth: 2,
-      limit: 0,
-      select: {
-        title: true,
-        slug: true,
-      },
-    })
-
-    const categoryIds = categories.docs.map((category) => category.id)
-
-    const articles = await payload.find({
-      collection: 'articles',
-      limit: 0,
-      depth: 2,
-      where: {
-        categories: {
-          in: categoryIds,
-        },
-      },
-    })
-
-    const articlesByCategory = categories.docs.map((category) => {
-      const relatedArticles = articles.docs.filter((article) =>
-        article.categories?.some((c) => typeof c !== 'string' && c.id === category.id),
-      )
-
-      return {
-        category: category,
-        articles: relatedArticles,
-      }
-    })
-
-    return articlesByCategory
-  } catch (error) {
-    console.error('Fetching data failed:', error)
-    return []
   }
 }

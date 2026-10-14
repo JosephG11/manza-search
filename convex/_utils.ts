@@ -1,6 +1,6 @@
 import { ConvexError } from 'convex/values'
 import { MutationCtx, QueryCtx } from './_generated/server'
-import { Id } from './_generated/dataModel'
+import { Doc, Id } from './_generated/dataModel'
 
 type getUserByClerkIdProps = {
   ctx: QueryCtx | MutationCtx
@@ -49,4 +49,25 @@ export async function getConversationByConversationId({
   }
 
   return conversation
+}
+
+// Admins are listed by e-mail in the `ADMIN_EMAILS` Convex env var (comma-separated).
+// See docs/admins.md.
+export function isAdmin(user: Doc<'users'>) {
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '')
+    .split(',')
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean)
+
+  return adminEmails.includes(user.email.trim().toLowerCase())
+}
+
+export async function requireAdmin(ctx: QueryCtx | MutationCtx) {
+  const user = await getAuthenticatedUser(ctx)
+
+  if (!isAdmin(user)) {
+    throw new ConvexError('Unauthorized')
+  }
+
+  return user
 }

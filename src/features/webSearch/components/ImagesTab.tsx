@@ -4,6 +4,7 @@ import { useSearchResults } from '../hooks/useSearchResults'
 import type { ImageResult, ResultsListResponse } from '../types'
 import { ClientPaginatedResults } from './ClientPaginatedResults'
 import { ExternalExtraContentButton } from './ExternalExtraContentButton'
+import { ExternalLinkBadge } from './ExternalLinkBadge'
 
 const IMAGES_PER_PAGE = 20
 
@@ -36,6 +37,8 @@ export function ImagesTab({ query }: { query: string }) {
               className="aspect-square w-full object-cover"
             />
           </a>
+
+          <ExternalLinkBadge />
 
           <ExternalExtraContentButton
             contentType="link"

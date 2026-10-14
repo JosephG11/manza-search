@@ -1,5 +1,11 @@
 import 'server-only'
-import type { WikipediaArticle, WikipediaImage, WikipediaSection, WikipediaSummary } from './types'
+import type {
+  WikipediaArticle,
+  WikipediaImage,
+  WikipediaLetterPage,
+  WikipediaSection,
+  WikipediaSummary,
+} from './types'
 
 const WIKIPEDIA_API_URL = 'https://en.wikipedia.org/w/api.php'
 const USER_AGENT = 'manza-search/1.0 (https://github.com/periottocosta)'
@@ -224,4 +230,68 @@ export async function getWikipediaArticle(title: string): Promise<WikipediaArtic
       link: link['*'],
     })),
   }
+}
+
+const LETTER_PAGE_SIZE = 24
+const LETTER_THUMBNAIL_WIDTH = 300
+
+type LetterPage = {
+  title: string
+  thumbnail?: { source: string }
+  pageprops?: { disambiguation?: string }
+}
+
+type LetterResponse = {
+  query?: { pages?: LetterPage[] }
+  continue?: { gapcontinue?: string }
+}
+
+const LETTER_MAX_BATCHES = 5
+
+async function fetchLetterBatch(letter: string, cursor?: string) {
+  const json = await wikipediaFetch<LetterResponse>({
+    action: 'query',
+    formatversion: '2',
+    generator: 'allpages',
+    gapprefix: letter,
+    gapnamespace: '0',
+    gapfilterredir: 'nonredirects',
+    gaplimit: String(LETTER_PAGE_SIZE),
+    ...(cursor ? { gapcontinue: cursor } : {}),
+    prop: 'pageimages|pageprops',
+    piprop: 'thumbnail',
+    pithumbsize: String(LETTER_THUMBNAIL_WIDTH),
+    pilimit: String(LETTER_PAGE_SIZE),
+    ppprop: 'disambiguation',
+  })
+
+  const entries = (json.query?.pages ?? [])
+    .filter((page) => !page.pageprops || !('disambiguation' in page.pageprops))
+    .map((page) => ({ title: page.title, thumbnail: page.thumbnail?.source ?? null }))
+    .sort((a, b) => a.title.localeCompare(b.title, 'en'))
+
+  return { entries, nextCursor: json.continue?.gapcontinue ?? null }
+}
+
+// Articles starting with `letter`, alphabetically. `cursor` is the title to resume from.
+// Wikipedia applies the redirect filter after its page limit, so a batch can come back nearly
+// empty; batches are merged until a page is full. Disambiguation pages are dropped so
+// ambiguous terms don't show up as cards.
+export async function listWikipediaByLetter(
+  letter: string,
+  cursor?: string,
+): Promise<WikipediaLetterPage> {
+  const entries: WikipediaLetterPage['entries'] = []
+  let nextCursor = cursor ?? null
+
+  for (let batch = 0; batch < LETTER_MAX_BATCHES; batch++) {
+    const result = await fetchLetterBatch(letter, nextCursor ?? undefined)
+
+    entries.push(...result.entries)
+    nextCursor = result.nextCursor
+
+    if (!nextCursor || entries.length >= LETTER_PAGE_SIZE) break
+  }
+
+  return { entries, nextCursor }
 }

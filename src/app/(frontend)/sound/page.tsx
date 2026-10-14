@@ -1,13 +1,12 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
+import { IndexBrowser } from '@/features/indexBrowser/components/IndexBrowser'
+import { SectionCarousel } from '@/features/carousel/components/SectionCarousel'
 
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Sound as SoundGlobalType } from '@/payload-types'
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
-import { SoundContent } from '@/features/sound/components/SoundContent'
-import { SoundHero } from '@/features/sound/components/SoundHero'
-import { findArticlesByTopic } from '@/utilities/findArticlesByTopic'
 import { Metadata } from 'next'
 
 export const dynamic = 'force-static'
@@ -17,9 +16,7 @@ export default async function Page() {
   try {
     const soundData: SoundGlobalType = await getCachedGlobal('sound', 2)()
 
-    const articlesByTopic = await findArticlesByTopic('sound')
-
-    const { suggestedArticles, pageAds, paidTopSpot } = soundData
+    const { suggestedArticles } = soundData
 
     return (
       <section>
@@ -33,11 +30,11 @@ export default async function Page() {
             </h2>
           </div>
 
-          <SoundHero ads={pageAds} />
+          <SectionCarousel section="sound" />
 
-
-          <SoundContent articlesByTopic={articlesByTopic} paidTopSpot={paidTopSpot} />
-
+          <Suspense>
+            <IndexBrowser section="sound" />
+          </Suspense>
 
           <BottomMenu />
         </div>

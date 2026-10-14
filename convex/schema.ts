@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
-import { contentTypeValidator, externalContentValidator } from './validators'
+import { contentTypeValidator, externalContentValidator, indexSectionValidator } from './validators'
 
 export default defineSchema({
   users: defineTable({
@@ -95,4 +95,33 @@ export default defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_visitedAt', ['visitedAt']),
+  indexNodes: defineTable({
+    section: indexSectionValidator,
+    parentId: v.optional(v.id('indexNodes')),
+    depth: v.number(),
+    letter: v.string(),
+    name: v.string(),
+    nameLower: v.string(),
+    sortKey: v.string(),
+    createdBy: v.id('users'),
+  })
+    .index('by_section_parent_letter_sortKey', ['section', 'parentId', 'letter', 'sortKey'])
+    .index('by_parent_sortKey', ['parentId', 'sortKey'])
+    .index('by_section_parent_nameLower', ['section', 'parentId', 'nameLower'])
+    .index('by_createdBy', ['createdBy']),
+  indexNodeItems: defineTable({
+    nodeId: v.id('indexNodes'),
+    title: v.string(),
+    link: v.string(),
+    coverUrl: v.optional(v.string()),
+    coverPublicId: v.optional(v.string()),
+    createdBy: v.id('users'),
+  })
+    .index('by_node', ['nodeId'])
+    .index('by_createdBy', ['createdBy']),
+  carouselImages: defineTable({
+    section: indexSectionValidator,
+    storageId: v.id('_storage'),
+    createdBy: v.id('users'),
+  }).index('by_section', ['section']),
 })

@@ -14,3 +14,13 @@ export const externalContentValidator = v.object({
   thumbnail: v.optional(v.string()),
   source: v.optional(v.string()),
 })
+
+export const indexSectionValidator = v.union(
+  v.literal('scope'),
+  v.literal('art'),
+  v.literal('img'),
+  v.literal('sound'),
+  v.literal('literature'),
+  v.literal('travel'),
+  v.literal('healthAndWellness'),
+)

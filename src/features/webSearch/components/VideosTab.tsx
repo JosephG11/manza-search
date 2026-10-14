@@ -4,6 +4,7 @@ import { useSearchResults } from '../hooks/useSearchResults'
 import type { ResultsListResponse, VideoResult } from '../types'
 import { ClientPaginatedResults } from './ClientPaginatedResults'
 import { ExternalExtraContentButton } from './ExternalExtraContentButton'
+import { ExternalLinkBadge } from './ExternalLinkBadge'
 
 const VIDEOS_PER_PAGE = 12
 
@@ -42,6 +43,8 @@ export function VideosTab({ query }: { query: string }) {
               </p>
             </div>
           </a>
+
+          <ExternalLinkBadge />
 
           <ExternalExtraContentButton
             contentType="video"

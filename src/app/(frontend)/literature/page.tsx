@@ -1,14 +1,13 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
+import { IndexBrowser } from '@/features/indexBrowser/components/IndexBrowser'
+import { SectionCarousel } from '@/features/carousel/components/SectionCarousel'
 import { Metadata } from 'next'
 
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Literature as LiteratureGlobalType } from '@/payload-types'
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
-import { LiteratureContent } from '@/features/literature/components/LiteratureContent'
-import { LiteratureHero } from '@/features/literature/components/LiteratureHero'
-import { findArticlesByTopic } from '@/utilities/findArticlesByTopic'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -17,9 +16,7 @@ export default async function Page() {
   try {
     const literatureData: LiteratureGlobalType = await getCachedGlobal('literature', 2)()
 
-    const articlesByTopic = await findArticlesByTopic('literature')
-
-    const { suggestedArticles, pageAds, paidTopSpot } = literatureData
+    const { suggestedArticles } = literatureData
 
     return (
       <section>
@@ -33,11 +30,11 @@ export default async function Page() {
             </h2>
           </div>
 
-          <LiteratureHero ads={pageAds} />
+          <SectionCarousel section="literature" />
 
-
-          <LiteratureContent articlesByTopic={articlesByTopic} paidTopSpot={paidTopSpot} />
-
+          <Suspense>
+            <IndexBrowser section="literature" />
+          </Suspense>
 
           <BottomMenu />
         </div>

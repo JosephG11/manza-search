@@ -1,67 +1,19 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
 import { Metadata } from 'next'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 
-import { ScopeTopMenuContainer } from '@/features/scope/components/ScopeTopMenuContainer'
-import { ScopeLeftMenuContainer } from '@/features/scope/components/ScopeLeftMenuContainer'
-import { ScopeContent } from '@/features/scope/components/ScopeContent'
+import { ScopeBrowser } from '@/features/scope/components/ScopeBrowser'
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
 
 import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Scope as ScopeGlobalType } from '@/payload-types'
-import { findArticlesByTopic } from '@/utilities/findArticlesByTopic'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
 
 export default async function Page() {
-  const payload = await getPayload({ config: configPromise })
-
   try {
-    const topics = await payload.find({
-      collection: 'topics',
-    })
-
-    const scopeSectionData = await Promise.all(
-      topics.docs.map(async (topic) => {
-        if (!topic.slug) return null
-
-        const articlesByCategory = await findArticlesByTopic(topic.slug)
-
-        return {
-          topic: topic,
-          articlesByCategory: articlesByCategory,
-        }
-      }),
-    )
-
-    const categories = await payload.find({
-      collection: 'categories',
-      depth: 1,
-      overrideAccess: false,
-      select: {
-        title: true,
-        slug: true,
-        Topic: true,
-      },
-    })
-
-    const articles = await payload.find({
-      collection: 'articles',
-      sort: '-updatedAt',
-      depth: 1,
-      overrideAccess: false,
-      select: {
-        title: true,
-        slug: true,
-        categories: true,
-        heroImage: true,
-      },
-    })
-
     const ScopeData: ScopeGlobalType = await getCachedGlobal('scope', 1)()
 
     return (
@@ -73,16 +25,10 @@ export default async function Page() {
           <div className="mx-auto flex w-3/4 justify-center rounded-b-[10px] bg-black md:w-1/2 xl:w-1/3">
             <h2 className="py-2 font-serif text-xl uppercase text-white">Scope HomePage</h2>
           </div>
-          <ScopeLeftMenuContainer sectionData={scopeSectionData} />
 
-          <ScopeTopMenuContainer sectionData={scopeSectionData} />
-
-          <ScopeContent
-            sectionData={scopeSectionData}
-            articles={articles?.docs}
-            categories={categories?.docs}
-          />
-
+          <Suspense>
+            <ScopeBrowser />
+          </Suspense>
 
           <BottomMenu />
         </div>

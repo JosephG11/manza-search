@@ -6,7 +6,8 @@ import { cn } from '@/utilities/ui'
 
 import { noScrollbarsClassName } from 'react-remove-scroll-bar'
 import { ToolsMenu } from '@/features/toolsMenu/components/ToolsMenu'
-import { MenuBoxIcon, ToolsIcon } from '@/components/site-icons'
+import { GamepadDirectional } from 'lucide-react'
+import { MenuBoxIcon } from '@/components/site-icons'
 import { FiloStorageButton } from '@/features/shared/components/FiloStorageButton'
 
 export function BottomMenu() {
@@ -24,7 +25,7 @@ export function BottomMenu() {
               aria-label="Tools"
               className="size-full rounded-b-none rounded-tl-none rounded-tr-xl bg-menu-red hover:bg-pink-500"
             >
-              <ToolsIcon className="h-8 w-8 text-white" />
+              <GamepadDirectional className="size-8 text-white" />
             </Button>
           </PopoverTrigger>
 

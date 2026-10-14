@@ -36,3 +36,13 @@ export type WikipediaArticle = {
 export type WikipediaResponse = {
   summary: WikipediaSummary | null
 }
+
+export type WikipediaLetterEntry = {
+  title: string
+  thumbnail: string | null
+}
+
+export type WikipediaLetterPage = {
+  entries: WikipediaLetterEntry[]
+  nextCursor: string | null
+}

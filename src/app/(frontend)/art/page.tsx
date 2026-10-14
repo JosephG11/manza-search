@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import PageClient from './page.client'
+import { IndexBrowser } from '@/features/indexBrowser/components/IndexBrowser'
+import { SectionCarousel } from '@/features/carousel/components/SectionCarousel'
 import { Metadata } from 'next'
 
 import { BottomMenu } from '@/features/shared/components/BottomMenu'
@@ -7,9 +9,6 @@ import { getCachedGlobal } from '@/utilities/getGlobals'
 import { Art as ArtGlobalType } from '@/payload-types'
 
 import { SuggestedArticles } from '@/features/shared/components/SuggestedArticles'
-import { ArtContent } from '@/features/art/components/ArtContent'
-import { ArtHero } from '@/features/art/components/ArtHero'
-import { findArticlesByTopic } from '@/utilities/findArticlesByTopic'
 
 export const dynamic = 'force-static'
 export const revalidate = 600
@@ -18,9 +17,7 @@ export default async function Page() {
   try {
     const artData: ArtGlobalType = await getCachedGlobal('art', 2)()
 
-    const articlesByTopic = await findArticlesByTopic('art')
-
-    const { suggestedArticles, pageAds, paidTopSpot } = artData
+    const { suggestedArticles } = artData
 
     return (
       <section>
@@ -34,11 +31,11 @@ export default async function Page() {
             </h2>
           </div>
 
-          <ArtHero ads={pageAds} />
+          <SectionCarousel section="art" />
 
-
-          <ArtContent articlesByTopic={articlesByTopic} paidTopSpot={paidTopSpot} />
-
+          <Suspense>
+            <IndexBrowser section="art" />
+          </Suspense>
 
           <BottomMenu />
         </div>

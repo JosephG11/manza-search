@@ -9,7 +9,7 @@ import type { Header } from '@/payload-types'
 import { Logo } from '@/components/Logo/Logo'
 import { HeaderNav, MobileHeaderNav } from './Nav/HeaderNav'
 
-import { Menu, ShoppingCart } from 'lucide-react'
+import { Menu, Settings, ShoppingCart } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Search } from '@/features/search/components/Search'
 import { ClerkLoading, SignedIn, SignedOut } from '@clerk/nextjs'
@@ -50,7 +50,10 @@ export function HeaderClient({ data }: { data: Header }) {
           )}
 
           <div className="hidden items-center gap-4 lg:flex">
-            <Link href="/settings">Settings</Link>
+            <Link href="/settings">
+              <span className="sr-only">Settings</span>
+              <Settings className="w-5" />
+            </Link>
             <Link href="/shopping-cart">
               <span className="sr-only">Shopping cart</span>
               <ShoppingCart className="w-5" />
@@ -78,7 +81,10 @@ export function HeaderClient({ data }: { data: Header }) {
               </PopoverTrigger>
               <PopoverContent className="block overflow-hidden rounded-xl border-4 border-black bg-primary-blue p-0 lg:hidden">
                 <div className="flex w-full items-center justify-between gap-4 px-2 py-3 text-white">
-                  <Link href="/settings">Settings</Link>
+                  <Link href="/settings">
+                    <span className="sr-only">Settings</span>
+                    <Settings className="w-5" />
+                  </Link>
 
                   <div className="flex gap-4">
                     <Link href="/shopping-cart">
