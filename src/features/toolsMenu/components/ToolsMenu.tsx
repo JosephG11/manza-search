@@ -56,27 +56,23 @@ const menuItems: MenuItem[] = [
 
 export function ToolsMenu() {
   return (
-    <div className="space-y-6">
-      <div className="w-full text-center font-serif text-3xl">Tools</div>
+    <div className="grid w-full grid-cols-2 gap-x-2 gap-y-4 sm:grid-cols-3">
+      {menuItems.map(({ label, id, icon, disabled }) => {
+        return (
+          <button
+            key={id}
+            disabled={disabled}
+            title={disabled ? 'Em breve' : undefined}
+            className="flex flex-col items-center gap-2 hover:text-secondary-blue disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-inherit"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-300 p-2 text-2xl text-white">
+              {icon ?? 'PP'}
+            </div>
 
-      <div className="grid w-full grid-cols-2 gap-y-4 sm:grid-cols-3">
-        {menuItems.map(({ label, id, icon, disabled }) => {
-          return (
-            <button
-              key={id}
-              disabled={disabled}
-              title={disabled ? 'Em breve' : undefined}
-              className="flex flex-col items-center gap-2 hover:text-secondary-blue disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:text-inherit"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-300 p-2 text-2xl text-white">
-                {icon ?? 'PP'}
-              </div>
-
-              <div className="whitespace-nowrap font-serif capitalize">{label}</div>
-            </button>
-          )
-        })}
-      </div>
+            <div className="whitespace-nowrap font-serif capitalize">{label}</div>
+          </button>
+        )
+      })}
     </div>
   )
 }

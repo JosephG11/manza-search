@@ -6,9 +6,12 @@ import { cn } from '@/utilities/ui'
 
 import { noScrollbarsClassName } from 'react-remove-scroll-bar'
 import { ToolsMenu } from '@/features/toolsMenu/components/ToolsMenu'
+import { StorageMenu } from '@/features/storage/components/StorageMenu'
 import { GamepadDirectional } from 'lucide-react'
 import { MenuBoxIcon } from '@/components/site-icons'
-import { FiloStorageButton } from '@/features/shared/components/FiloStorageButton'
+import { Panel } from '@/features/shared/components/PanelTitle'
+
+const popoverStyles = 'w-fit border-0 bg-transparent p-0 shadow-none'
 
 export function BottomMenu() {
   return (
@@ -30,13 +33,14 @@ export function BottomMenu() {
           </PopoverTrigger>
 
           <PopoverContent
-            sideOffset={0}
-            className={cn(
-              'ml-0 w-fit rounded-lg border-2 border-red-500 bg-menu font-serif text-white',
-              'lg:ml-28',
-            )}
+            side="top"
+            align="start"
+            sideOffset={8}
+            className={cn(popoverStyles, 'ml-2')}
           >
-            <ToolsMenu />
+            <Panel title="Tools">
+              <ToolsMenu />
+            </Panel>
           </PopoverContent>
         </Popover>
       </div>
@@ -51,18 +55,22 @@ export function BottomMenu() {
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              aria-label="Menu box"
+              aria-label="Storage"
               className="flex size-full gap-1 rounded-b-none rounded-tl-xl rounded-tr-none bg-blue-800 hover:bg-green-600"
             >
               <MenuBoxIcon className="h-8 w-8 text-white" />
             </Button>
           </PopoverTrigger>
+
           <PopoverContent
-            className={cn(
-              'flex h-28 items-center justify-center rounded-lg border-2 border-black bg-menu font-serif text-white',
-            )}
+            side="top"
+            align="end"
+            sideOffset={8}
+            className={cn(popoverStyles, 'mr-2')}
           >
-            <FiloStorageButton />
+            <Panel title="Storage" className="min-w-52">
+              <StorageMenu />
+            </Panel>
           </PopoverContent>
         </Popover>
       </div>

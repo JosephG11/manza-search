@@ -10,6 +10,8 @@ import { Footer } from '@/Globals/Footer/Component'
 import { Header } from '@/Globals/Header/Component'
 import { ToolboxSlot } from '@/features/shared/components/ToolboxSlot'
 import { FiloDialogGate } from '@/features/filo/FiloDialogGate'
+import { DashboardDialog } from '@/features/dashboard/components/DashboardDialog'
+import { LinkStackDialogGate } from '@/features/linkStack/components/LinkStackDialogGate'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -43,6 +45,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           {children}
           <ToolboxSlot />
           <FiloDialogGate />
+          <DashboardDialog />
+          <LinkStackDialogGate />
           <Footer />
         </body>
       </html>
