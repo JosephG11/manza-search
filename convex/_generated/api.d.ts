@@ -8,11 +8,6 @@
  * @module
  */
 
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
 import type * as _utils from "../_utils.js";
 import type * as carousel from "../carousel.js";
 import type * as cleanupHistory from "../cleanupHistory.js";
@@ -20,6 +15,7 @@ import type * as cleanupPinned from "../cleanupPinned.js";
 import type * as conversation from "../conversation.js";
 import type * as conversations from "../conversations.js";
 import type * as crons from "../crons.js";
+import type * as dashboard from "../dashboard.js";
 import type * as event from "../event.js";
 import type * as events from "../events.js";
 import type * as friend from "../friend.js";
@@ -30,6 +26,7 @@ import type * as indexBrowser from "../indexBrowser.js";
 import type * as indexCover from "../indexCover.js";
 import type * as indexLetter from "../indexLetter.js";
 import type * as indexMigration from "../indexMigration.js";
+import type * as linkStack from "../linkStack.js";
 import type * as list from "../list.js";
 import type * as lists from "../lists.js";
 import type * as message from "../message.js";
@@ -43,14 +40,12 @@ import type * as saves from "../saves.js";
 import type * as user from "../user.js";
 import type * as validators from "../validators.js";
 
-/**
- * A utility for referencing Convex functions in your app's API.
- *
- * Usage:
- * ```js
- * const myFunctionReference = api.myModule.myFunction;
- * ```
- */
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+
 declare const fullApi: ApiFromModules<{
   _utils: typeof _utils;
   carousel: typeof carousel;
@@ -59,6 +54,7 @@ declare const fullApi: ApiFromModules<{
   conversation: typeof conversation;
   conversations: typeof conversations;
   crons: typeof crons;
+  dashboard: typeof dashboard;
   event: typeof event;
   events: typeof events;
   friend: typeof friend;
@@ -69,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   indexCover: typeof indexCover;
   indexLetter: typeof indexLetter;
   indexMigration: typeof indexMigration;
+  linkStack: typeof linkStack;
   list: typeof list;
   lists: typeof lists;
   message: typeof message;
@@ -82,11 +79,31 @@ declare const fullApi: ApiFromModules<{
   user: typeof user;
   validators: typeof validators;
 }>;
+
+/**
+ * A utility for referencing Convex functions in your app's public API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
 export declare const api: FilterApi<
   typeof fullApi,
   FunctionReference<any, "public">
 >;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
 export declare const internal: FilterApi<
   typeof fullApi,
   FunctionReference<any, "internal">
 >;
+
+export declare const components: {};

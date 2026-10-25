@@ -1,6 +1,11 @@
 import { defineSchema, defineTable } from 'convex/server'
 import { v } from 'convex/values'
-import { contentTypeValidator, externalContentValidator, indexSectionValidator } from './validators'
+import {
+  cityValidator,
+  contentTypeValidator,
+  externalContentValidator,
+  indexSectionValidator,
+} from './validators'
 
 export default defineSchema({
   users: defineTable({
@@ -119,6 +124,30 @@ export default defineSchema({
   })
     .index('by_node', ['nodeId'])
     .index('by_createdBy', ['createdBy']),
+  linkStackTabs: defineTable({
+    userId: v.id('users'),
+    name: v.string(),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_name', ['userId', 'name']),
+  linkStackLinks: defineTable({
+    userId: v.id('users'),
+    tabId: v.id('linkStackTabs'),
+    url: v.string(),
+    title: v.optional(v.string()),
+  })
+    .index('by_tab', ['tabId'])
+    .index('by_tab_url', ['tabId', 'url']),
+  dashboardSettings: defineTable({
+    userId: v.id('users'),
+    timeZoneCities: v.optional(v.array(cityValidator)),
+    calendarCity: v.optional(cityValidator),
+  }).index('by_user', ['userId']),
+  goals: defineTable({
+    userId: v.id('users'),
+    text: v.string(),
+    completedAt: v.optional(v.number()),
+  }).index('by_user', ['userId']),
   carouselImages: defineTable({
     section: indexSectionValidator,
     storageId: v.id('_storage'),

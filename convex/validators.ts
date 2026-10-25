@@ -24,3 +24,13 @@ export const indexSectionValidator = v.union(
   v.literal('travel'),
   v.literal('healthAndWellness'),
 )
+
+export const cityValidator = v.object({
+  id: v.number(),
+  name: v.string(),
+  region: v.string(),
+  country: v.string(),
+  lat: v.number(),
+  lon: v.number(),
+  timeZone: v.string(),
+})
